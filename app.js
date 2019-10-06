@@ -162,20 +162,23 @@ getRequest('https://jsonplaceholder.typicode.com/users', 'post', newUser)
 function fetchFnc() {
     return {
         get(url) {
-            return fetch(url);
+            return Promise.resolve().then(() => {
+                return fetch(url).then(res => res.json());
+            })
         },
         post(url, item) {
-            return fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8'
-                },
-                body: JSON.stringify(item)
-            });
+            return Promise.resolve().then(() => {
+                return fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    },
+                    body: JSON.stringify(item)
+                }).then(res => res.json());
+            })
         },
     };
 }
-
 
 const fetchRequest = fetchFnc();
 
@@ -188,6 +191,25 @@ const newObj = {
 };
 
 fetchRequest.post('https://jsonplaceholder.typicode.com/users', newObj)
-    .then(res => res.json())
     .then(res => console.log(res))
     .catch((err) => console.log(err));
+
+
+// Или более простой вариант:
+
+function fetchFnc2() {
+    return {
+        get(url) {
+            return fetch(url).then(res => res.json());
+        },
+        post(url, item) {
+            return fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(item)
+            }).then(res => res.json());
+        },
+    };
+}
